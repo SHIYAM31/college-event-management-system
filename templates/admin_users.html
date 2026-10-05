@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<h1>Users</h1>
+<table>
+  <tr><th>Name</th><th>Email</th><th>Department</th><th>Role</th></tr>
+  {% for u in users %}
+  <tr>
+    <td>{{ u.name }}</td><td>{{ u.email }}</td><td>{{ u.department or '' }}</td>
+    <td>
+      {% if u.id == g.user.id %}{{ u.role }}{% else %}
+      <form method="post" action="{{ url_for('admin_user_role', user_id=u.id) }}" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <select name="role">{% for r in ('student', 'organizer', 'admin') %}<option {{ 'selected' if u.role == r }}>{{ r }}</option>{% endfor %}</select>
+        <button class="btn small">Save</button>
+      </form>{% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

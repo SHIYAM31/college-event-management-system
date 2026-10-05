@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Scan attendance{% endblock %}
+{% block content %}
+<h1>Scan attendance: {{ ev.title }}</h1>
+<p>Present: <strong id="present">{{ stats.present }}</strong> / <span id="registered">{{ stats.registered }}</span></p>
+<div id="result" class="flash" hidden></div>
+<div id="reader" data-event="{{ ev.id }}" data-csrf="{{ csrf_token() }}" data-url="{{ url_for('attendance_scan') }}"></div>
+<div class="card narrow">
+  <label>Enter pass code manually <input id="manual" autocomplete="off"></label>
+  <button class="btn" id="manual-btn" type="button">Mark present</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<script src="{{ url_for('static', filename='scan.js') }}"></script>
+{% endblock %}

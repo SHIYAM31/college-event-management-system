@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Feedback{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Feedback: {{ ev.title }}</h1>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Rating
+      <select name="rating">{% for i in range(5, 0, -1) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}</select>
+    </label>
+    <label>Comment <textarea name="comment" rows="4"></textarea></label>
+    <button class="btn">Submit</button>
+  </form>
+</div>
+{% endblock %}

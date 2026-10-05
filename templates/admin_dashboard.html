@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Admin dashboard</h1>
+<div class="stats">
+  <div class="card"><b>{{ totals.events }}</b><span>Events</span></div>
+  <div class="card"><b>{{ totals.approved }}</b><span>Approved</span></div>
+  <div class="card"><b>{{ totals.students }}</b><span>Students</span></div>
+  <div class="card"><b>{{ totals.registrations }}</b><span>Registrations</span></div>
+  <div class="card"><b>{{ totals.present }}</b><span>Attended</span></div>
+</div>
+
+<h2>Waiting for approval ({{ pending|length }})</h2>
+<table>
+  <tr><th>Title</th><th>Organizer</th><th>Date</th><th>Capacity</th><th>Decision</th></tr>
+  {% for e in pending %}
+  <tr>
+    <td><a href="{{ url_for('event_detail', event_id=e.id) }}">{{ e.title }}</a></td>
+    <td>{{ e.organizer_name }}</td><td>{{ e.event_date|fmt_dt }}</td><td>{{ e.capacity }}</td>
+    <td>
+      <form method="post" action="{{ url_for('admin_event_action', event_id=e.id, action='approve') }}" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn small">Approve</button>
+      </form>
+      <form method="post" action="{{ url_for('admin_event_action', event_id=e.id, action='reject') }}" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input name="reason" placeholder="Reason" required>
+        <button class="btn small danger">Reject</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="5" class="muted">Nothing pending.</td></tr>{% endfor %}
+</table>
+
+<h2>All events</h2>
+<table>
+  <tr><th>Title</th><th>Status</th><th>Registered</th><th>Present</th><th>Attendance</th><th></th></tr>
+  {% for e, s in rows %}
+  <tr>
+    <td>{{ e.title }}</td><td><span class="tag status-{{ e.status }}">{{ e.status }}</span></td>
+    <td>{{ s.registered }} / {{ s.capacity }}</td><td>{{ s.present }}</td><td>{{ s.attendance_rate }}%</td>
+    <td class="actions">
+      <a href="{{ url_for('report', event_id=e.id) }}">Report</a>
+      {% if e.status == 'approved' %}
+      <form method="post" action="{{ url_for('admin_event_action', event_id=e.id, action='cancel') }}" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="link">Cancel</button>
+      </form>{% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>Department-wise participation</h2>
+<table>
+  <tr><th>Department</th><th>Registered</th><th>Present</th></tr>
+  {% for d in depts %}<tr><td>{{ d.department }}</td><td>{{ d.registered }}</td><td>{{ d.present }}</td></tr>{% endfor %}
+</table>
+{% endblock %}

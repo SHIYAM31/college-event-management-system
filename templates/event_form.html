@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if editing else 'New' }} event{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>{{ 'Edit' if editing else 'Create' }} event</h1>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Title <input name="title" value="{{ ev.title or '' }}" required></label>
+    <label>Type
+      <select name="type">{% for t in EVENT_TYPES %}<option {{ 'selected' if ev.type == t }}>{{ t }}</option>{% endfor %}</select>
+    </label>
+    <label>Description <textarea name="description" rows="4">{{ ev.description or '' }}</textarea></label>
+    <label>Event date and time <input type="datetime-local" name="event_date" value="{{ ev.event_date or '' }}" required></label>
+    <label>Registration deadline <input type="datetime-local" name="deadline" value="{{ ev.deadline or '' }}" required></label>
+    <label>Venue <input name="venue" value="{{ ev.venue or '' }}" required></label>
+    <label>Capacity <input type="number" name="capacity" min="1" value="{{ ev.capacity or '' }}" required></label>
+    <button class="btn">{{ 'Save changes' if editing else 'Submit for approval' }}</button>
+  </form>
+</div>
+{% endblock %}

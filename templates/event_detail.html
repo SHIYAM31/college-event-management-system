@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}{{ ev.title }}{% endblock %}
+{% block content %}
+<div class="card">
+  <span class="tag">{{ ev.type }}</span> <span class="tag status-{{ ev.status }}">{{ ev.status }}</span>
+  <h1>{{ ev.title }}</h1>
+  <p class="muted">{{ ev.event_date|fmt_dt }} · {{ ev.venue }} · by {{ ev.organizer_name }}</p>
+  <p>{{ ev.description or 'No description.' }}</p>
+  <p>Seats: {{ reg_count }} / {{ ev.capacity }} · Register by {{ ev.deadline|fmt_dt }}</p>
+  {% if ev.status == 'rejected' and ev.reject_reason %}<p class="err">Rejected: {{ ev.reject_reason }}</p>{% endif %}
+
+  {% if g.user.role == 'student' %}
+    {% if reg %}
+      <p class="ok">You are registered.</p>
+      <a class="btn" href="{{ url_for('my_registrations') }}">View my QR pass</a>
+    {% elif open_for_reg %}
+      <form method="post" action="{{ url_for('register_for_event', event_id=ev.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn">Register</button>
+      </form>
+    {% else %}
+      <p class="muted">Registration is not open (closed, full or not approved).</p>
+    {% endif %}
+    {% if can_feedback %}<a class="btn" href="{{ url_for('feedback', event_id=ev.id) }}">Give feedback</a>{% endif %}
+  {% endif %}
+
+  {% if g.user.role in ('organizer', 'admin') and (g.user.role == 'admin' or ev.organizer_id == g.user.id) %}
+    <a class="btn" href="{{ url_for('scan_page', event_id=ev.id) }}">Scan attendance</a>
+    <a class="btn secondary" href="{{ url_for('report', event_id=ev.id) }}">Report</a>
+  {% endif %}
+</div>
+{% endblock %}

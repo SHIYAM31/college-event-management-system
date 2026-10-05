@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}My events{% endblock %}
+{% block content %}
+<h1>My events</h1>
+<table>
+  <tr><th>Title</th><th>Date</th><th>Status</th><th>Registered</th><th>Present</th><th></th></tr>
+  {% for e, s in rows %}
+  <tr>
+    <td><a href="{{ url_for('event_detail', event_id=e.id) }}">{{ e.title }}</a></td>
+    <td>{{ e.event_date|fmt_dt }}</td>
+    <td><span class="tag status-{{ e.status }}">{{ e.status }}</span>
+        {% if e.reject_reason %}<br><small class="err">{{ e.reject_reason }}</small>{% endif %}</td>
+    <td>{{ s.registered }} / {{ s.capacity }}</td>
+    <td>{{ s.present }}</td>
+    <td class="actions">
+      <a href="{{ url_for('event_edit', event_id=e.id) }}">Edit</a>
+      {% if e.status == 'approved' %}<a href="{{ url_for('scan_page', event_id=e.id) }}">Scan</a>{% endif %}
+      <a href="{{ url_for('report', event_id=e.id) }}">Report</a>
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="6" class="muted">No events yet. <a href="{{ url_for('event_new') }}">Create one</a>.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

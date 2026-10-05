@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Events{% endblock %}
+{% block content %}
+<h1>{{ 'Past' if past else 'Upcoming' }} events</h1>
+<form method="get" class="filters">
+  <input name="q" value="{{ q }}" placeholder="Search title or venue">
+  <select name="type">
+    <option value="">All types</option>
+    {% for t in EVENT_TYPES %}<option {{ 'selected' if t == etype }}>{{ t }}</option>{% endfor %}
+  </select>
+  {% if past %}<input type="hidden" name="past" value="1">{% endif %}
+  <button class="btn small">Filter</button>
+  <a href="{{ url_for('events', past=0 if past else 1) }}">{{ 'Show upcoming' if past else 'Show past events' }}</a>
+</form>
+<div class="grid">
+  {% for e in events %}
+  <article class="card">
+    <span class="tag">{{ e.type }}</span>
+    <h2><a href="{{ url_for('event_detail', event_id=e.id) }}">{{ e.title }}</a></h2>
+    <p class="muted">{{ e.event_date|fmt_dt }} · {{ e.venue }}</p>
+    <p>{{ e.reg_count }} / {{ e.capacity }} seats filled</p>
+    <div class="bar"><span style="width: {{ (e.reg_count / e.capacity * 100)|round|int }}%"></span></div>
+    {% if e.mine %}<p class="ok">You are registered</p>{% endif %}
+  </article>
+  {% else %}
+  <p class="muted">No events found.</p>
+  {% endfor %}
+</div>
+{% endblock %}

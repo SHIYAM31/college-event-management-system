@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}My passes{% endblock %}
+{% block content %}
+<h1>My registrations</h1>
+<div class="grid">
+  {% for r, qr in rows %}
+  <article class="card center">
+    <h2><a href="{{ url_for('event_detail', event_id=r.event_id) }}">{{ r.title }}</a></h2>
+    <p class="muted">{{ r.event_date|fmt_dt }} · {{ r.venue }}</p>
+    {% if qr %}<img class="qr" src="{{ qr }}" alt="QR pass">{% endif %}
+    <p class="code">{{ r.qr_token }}</p>
+    {% if r.scan_time %}<p class="ok">Attended at {{ r.scan_time|fmt_dt }}</p>
+    {% else %}<p class="muted">Show this pass at the entrance</p>{% endif %}
+  </article>
+  {% else %}
+  <p class="muted">You have not registered for any event yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

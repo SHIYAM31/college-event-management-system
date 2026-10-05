@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Report{% endblock %}
+{% block content %}
+<h1>Report: {{ ev.title }}</h1>
+<div class="stats">
+  <div class="card"><b>{{ stats.registered }}</b><span>Registered</span></div>
+  <div class="card"><b>{{ stats.present }}</b><span>Present</span></div>
+  <div class="card"><b>{{ stats.attendance_rate }}%</b><span>Attendance rate</span></div>
+  <div class="card"><b>{{ stats.fill_rate }}%</b><span>Fill rate</span></div>
+  <div class="card"><b>{{ stats.noshow_rate }}%</b><span>No-show rate</span></div>
+  <div class="card"><b>{{ stats.avg_rating if stats.avg_rating is not none else '–' }}</b><span>Avg rating ({{ stats.ratings }})</span></div>
+</div>
+<a class="btn" href="{{ url_for('report_csv', event_id=ev.id) }}">Download CSV (opens in Excel)</a>
+<h2>Department-wise</h2>
+<table>
+  <tr><th>Department</th><th>Registered</th><th>Present</th></tr>
+  {% for d in stats.departments %}<tr><td>{{ d.department }}</td><td>{{ d.registered }}</td><td>{{ d.present }}</td></tr>{% endfor %}
+</table>
+<h2>Participants</h2>
+<table>
+  <tr><th>Name</th><th>Department</th><th>Year</th><th>Status</th><th>Rating</th></tr>
+  {% for r in rows %}
+  <tr><td>{{ r.name }}<br><small class="muted">{{ r.email }}</small></td><td>{{ r.department }}</td><td>{{ r.year or '' }}</td>
+      <td>{{ 'Present' if r.scan_time else 'Absent' }}</td><td>{{ r.rating or '' }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}
